@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: myapp
-          image: docker.io/sungeun7767/myapp:13
+          image: docker.io/sungeun7767/myapp:14
           ports:
             - containerPort: 8080
 
