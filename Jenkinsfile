@@ -33,7 +33,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKER_HUB_TOKEN')]) {
                     sh 'echo $DOCKER_HUB_TOKEN | docker login -u sungeun7767 --password-stdin'
-                    sh "docker push $(cat image_tag.txt)"
+                    sh 'docker push $(cat image_tag.txt)'
                 }
             }
         }
