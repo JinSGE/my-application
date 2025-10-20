@@ -4,12 +4,13 @@ pipeline {
     environment {
         REGISTRY = "docker.io/sungeun7767"
         IMAGE = "myapp"
+        GIT_REPO_URL = "https://github.com/JinSGE/my-application.git" 
     }
-
+	
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/sungeun7767/my-application.git'
+                git branch: 'main', url: 'https://github.com/JinSGE/my-application.git'
             }
         }
 
@@ -38,21 +39,28 @@ pipeline {
             }
         }
 
-        // master 클러스터에 연결은 kubeconfig를 원격에서 수행
-        stage('Update K8s Deployment') {
+        stage('Update K8s Manifest (GitOps Push)') {
             steps {
-                withCredentials([file(credentialsId: 'kubeconfig-master', variable: 'KUBECONFIG')]) {
-                    sh '''
+                withCredentials([string(credentialsId: 'github-token', variable: 'GIT_TOKEN')]) {
+                    sh ''' 
                     TAG=$(cat image_tag.txt | cut -d':' -f2)
+                    
+                    # 1. deployment.yaml 파일 수정
                     sed -i "s|image: .*|image: ${REGISTRY}/${IMAGE}:${TAG}|" k8s/deployment.yaml
-                    git config user.name "jenkins"
-                    git config user.email "jenkins@ci"
+                    
+                    # 2. Git 사용자 설정
+                    git config user.name "jenkins-bot"
+                    git config user.email "jenkins-bot@example.com"
+                    
+                    # 3. Git Add, Commit
                     git add k8s/deployment.yaml
-                    git commit -m "Update image tag to ${TAG}"
-                    git push origin main
+                    git commit -m "Update image tag to ${TAG} [CI]"
+                    
+                    # 4. GitHub에 인증하여 Push (가장 중요)
+                    # (git push origin main 대신 아래 명령어를 사용)
+                    git push https://${GIT_TOKEN}@github.com/JinSGE/my-application.git HEAD:main
                     '''
                 }
-            }
         }
     }
 }
