@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: myapp
-          image: docker.io/your_dockerhub_id/myapp:latest   # Jenkins가 갱신
+          image: docker.io/sungeun7767/myapp:13
           ports:
             - containerPort: 8080
 
