@@ -1,6 +1,10 @@
 pipeline {
     agent any
-
+	
+	tools {
+		maven 'Maven-Latest'
+	}
+	
     environment {
         REGISTRY = "docker.io/sungeun7767"
         IMAGE = "myapp"
